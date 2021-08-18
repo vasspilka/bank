@@ -29,10 +29,12 @@ defmodule Bank.MixProject do
   defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
-  #
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:commanded, "~> 1.2.0"},
+      {:commanded_eventstore_adapter, "~> 1.2.0"},
+      {:eventstore, "~> 1.3.0"},
       {:phoenix, "~> 1.5.9"},
       {:phoenix_ecto, "~> 4.1"},
       {:ecto_sql, "~> 3.4"},
