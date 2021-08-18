@@ -27,6 +27,23 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :bank, Bank.EventStore,
+  username: "postgres",
+  password: "postgres",
+  database: "bank_eventstore_dev",
+  hostname: "localhost",
+  serializer: EventStore.TermSerializer
+
+config :bank, event_stores: [Bank.EventStore]
+
+config :bank, Bank.Core.Application,
+  event_store: [
+    adapter: Commanded.EventStore.Adapters.EventStore,
+    event_store: Bank.EventStore
+  ],
+  pubsub: :local,
+  registry: :local
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
