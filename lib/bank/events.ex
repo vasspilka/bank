@@ -1,18 +1,32 @@
-defmodule Bank.Events do
+defmodule Bank.Core.Events do
+  defmodule JournalEntryCreated do
+    @type account_entries() :: %{binary() => integer()}
+    @type metadata() :: %{event: atom()}
+
+    @type t :: %__MODULE__{
+            journal_entry_uuid: binary(),
+            debit: account_entries(),
+            credit: account_entries(),
+            metadata: metadata
+          }
+
+    defstruct [:journal_entry_uuid, :debit, :credit, :metadata]
+  end
+
   defmodule MoneyDeposited do
     @type t :: %__MODULE__{
-      user_id: integer(),
-      amount: integer()
-    }
+            user_id: integer(),
+            amount: integer()
+          }
 
     defstruct [:user_id, :amount]
   end
 
   defmodule MoneyWithdrawn do
     @type t :: %__MODULE__{
-      user_id: integer(),
-      amount: integer()
-    }
+            user_id: integer(),
+            amount: integer()
+          }
 
     defstruct [:user_id, :amount]
   end
