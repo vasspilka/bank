@@ -15,7 +15,8 @@ defmodule Bank.Application do
       {Phoenix.PubSub, name: Bank.PubSub},
       # Start the Endpoint (http/https)
       BankWeb.Endpoint,
-      Bank.Core.Application
+      Bank.Core.Application,
+      Bank.Core.Accounting.AccountEntryProjector
       # Start a worker by calling: Bank.Worker.start_link(arg)
       # {Bank.Worker, arg}
     ]

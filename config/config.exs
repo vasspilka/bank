@@ -27,19 +27,22 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-config :bank, Bank.EventStore,
+config :bank, Bank.Core.EventStore,
   username: "postgres",
   password: "postgres",
   database: "bank_eventstore_dev",
   hostname: "localhost",
   serializer: EventStore.TermSerializer
 
-config :bank, event_stores: [Bank.EventStore]
+config :bank, event_stores: [Bank.Core.EventStore]
+
+config :commanded_ecto_projections,
+  repo: Bank.Repo
 
 config :bank, Bank.Core.Application,
   event_store: [
     adapter: Commanded.EventStore.Adapters.EventStore,
-    event_store: Bank.EventStore
+    event_store: Bank.Core.EventStore
   ],
   pubsub: :local,
   registry: :local

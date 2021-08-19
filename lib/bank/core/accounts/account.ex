@@ -1,12 +1,12 @@
-defmodule Bank.Core.UserAccounts.UserAccount do
+defmodule Bank.Core.Accounts.Account do
   alias Bank.Core.Commands.{DepositMoney, WithdrawMoney}
   alias Bank.Core.Events.{MoneyDeposited, MoneyWithdrawn, JournalEntryCreated}
-  alias Bank.Core.UserAccounts.UserAccount
+  alias Bank.Core.Accounts.Account
 
   @type t() :: %__MODULE__{balance: integer()}
   defstruct balance: 0
 
-  def execute(%UserAccount{}, %DepositMoney{} = cmd) do
+  def execute(%Account{}, %DepositMoney{} = cmd) do
     %MoneyDeposited{
       user_id: cmd.user_id,
       amount: cmd.amount
@@ -14,12 +14,12 @@ defmodule Bank.Core.UserAccounts.UserAccount do
     |> include_journal_entry()
   end
 
-  def execute(%UserAccount{balance: balance}, %WithdrawMoney{amount: amount})
+  def execute(%Account{balance: balance}, %WithdrawMoney{amount: amount})
       when balance - amount < 0 do
     {:error, :insufficient_balance}
   end
 
-  def execute(%UserAccount{}, %WithdrawMoney{} = cmd) do
+  def execute(%Account{}, %WithdrawMoney{} = cmd) do
     %MoneyWithdrawn{
       user_id: cmd.user_id,
       amount: cmd.amount

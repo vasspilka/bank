@@ -8,7 +8,7 @@ defmodule Bank.Core.Router do
       Commands.DepositMoney,
       Commands.WithdrawMoney
     ],
-    to: Bank.Core.UserAccounts.UserAccount,
+    to: Bank.Core.Accounts.Account,
     identity: :user_id,
     identity_prefix: "user_account-"
   )
