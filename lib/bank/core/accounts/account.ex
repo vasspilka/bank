@@ -1,18 +1,31 @@
 defmodule Bank.Core.Accounts.Account do
   alias Bank.Core.Commands.{DepositMoney, WithdrawMoney}
-  alias Bank.Core.Events.{MoneyDeposited, MoneyWithdrawn, JournalEntryCreated}
+  alias Bank.Core.Events.{MoneyDeposited, MoneyWithdrawn, JournalEntryCreated, AccountOpened}
   alias Bank.Core.Accounts.Account
 
   @type t() :: %__MODULE__{balance: integer()}
-  defstruct balance: 0
+  defstruct id: nil, balance: 0
+
+  def execute(%Account{id: nil}, %DepositMoney{} = cmd) do
+    [
+      %AccountOpened{
+        user_id: cmd.user_id
+      },
+      %MoneyDeposited{
+        user_id: cmd.user_id,
+        amount: cmd.amount
+      }
+    ]
+  end
 
   def execute(%Account{}, %DepositMoney{} = cmd) do
     %MoneyDeposited{
       user_id: cmd.user_id,
       amount: cmd.amount
     }
-    |> include_journal_entry()
   end
+
+  def execute(%Account{id: nil}, _cmd), do: {:error, :bad_account}
 
   def execute(%Account{balance: balance}, %WithdrawMoney{amount: amount})
       when balance - amount < 0 do
@@ -25,6 +38,10 @@ defmodule Bank.Core.Accounts.Account do
       amount: cmd.amount
     }
     |> include_journal_entry()
+  end
+
+  def apply(state, %AccountOpened{} = evt) do
+    %{state | id: evt.user_id}
   end
 
   def apply(state, %MoneyDeposited{} = evt) do
