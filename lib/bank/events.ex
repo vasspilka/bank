@@ -13,6 +13,12 @@ defmodule Bank.Core.Events do
     defstruct [:journal_entry_uuid, :debit, :credit, :metadata]
   end
 
+  defmodule AccountOpened do
+    @type t :: %__MODULE__{user_id: integer()}
+
+    defstruct [:user_id]
+  end
+
   defmodule MoneyDeposited do
     @type t :: %__MODULE__{
             user_id: integer(),
