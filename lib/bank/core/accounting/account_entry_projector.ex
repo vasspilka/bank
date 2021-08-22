@@ -14,5 +14,6 @@ defmodule Bank.Core.Accounting.AccountEntryProjector do
       AccountEntry,
       AccountEntry.from_journal_entry(evt)
     )
+    |> IO.inspect()
   end)
 end

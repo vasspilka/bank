@@ -10,12 +10,12 @@ defmodule Bank.Core.Accounts.Account do
     [
       %AccountOpened{
         user_id: cmd.user_id
-      },
-      %MoneyDeposited{
+      }
+    ] ++
+      include_journal_entry(%MoneyDeposited{
         user_id: cmd.user_id,
         amount: cmd.amount
-      }
-    ]
+      })
   end
 
   def execute(%Account{}, %DepositMoney{} = cmd) do
@@ -23,6 +23,7 @@ defmodule Bank.Core.Accounts.Account do
       user_id: cmd.user_id,
       amount: cmd.amount
     }
+    |> include_journal_entry()
   end
 
   def execute(%Account{id: nil}, _cmd), do: {:error, :bad_account}

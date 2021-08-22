@@ -1,4 +1,5 @@
 defmodule Bank.Core.Events do
+
   defmodule JournalEntryCreated do
     @type account_entries() :: %{binary() => integer()}
     @type metadata() :: %{event: atom()}

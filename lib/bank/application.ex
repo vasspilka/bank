@@ -9,8 +9,7 @@ defmodule Bank.Application do
       BankWeb.Telemetry,
       {Phoenix.PubSub, name: Bank.PubSub},
       BankWeb.Endpoint,
-      Bank.Core.Supervisor,
-      Bank.Core.Accounting.AccountEntryProjector
+      Bank.Core.Supervisor
     ]
 
     opts = [strategy: :one_for_one, name: Bank.Supervisor]

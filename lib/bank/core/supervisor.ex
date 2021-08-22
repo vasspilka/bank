@@ -7,7 +7,8 @@ defmodule Bank.Core.Supervisor do
 
   def init(_args) do
     children = [
-      Bank.Core.Application
+      Bank.Core.Application,
+      Bank.Core.Accounting.AccountEntryProjector
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
