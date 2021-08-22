@@ -12,7 +12,7 @@ defmodule Bank.Core.Accounting do
   @type account_entries :: JournalEntryCreated.account_entries()
 
   @spec create_raw_entry(account_entries(), account_entries(), map()) ::
-          {:ok, %JournalEntryCreated{}} | {:error, term()}
+          :ok | {:error, term()}
   def create_raw_entry(debit, credit, metadata \\ %{}) do
     with journal_entry <-
            validate_event(%JournalEntryCreated{
@@ -51,7 +51,7 @@ defmodule Bank.Core.Accounting do
     if total_debit == total_credit do
       :ok
     else
-      :error
+      {:error, :bad_entry}
     end
   end
 end
