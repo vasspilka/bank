@@ -6,7 +6,9 @@ defmodule Bank.Core.Accounting.AccountEntry do
 
   use Ecto.Schema
 
-  @type t() :: %__MODULE__{}
+  alias Bank.Core.Events.JournalEntryCreated
+
+  @type t() :: %{credit: integer(), credit: integer()}
 
   schema "accounting_account_entries_v1" do
     field :journal_entry_uuid, :binary_id
@@ -14,11 +16,9 @@ defmodule Bank.Core.Accounting.AccountEntry do
 
     field :credit, :integer, default: 0
     field :debit, :integer, default: 0
-
-    field :metadata, :map
   end
 
-  @spec from_journal_entry(map()) :: list(map())
+  @spec from_journal_entry(%JournalEntryCreated{}) :: [map()]
   def from_journal_entry(journal_entry) do
     journal_entry
     |> Map.take([:debit, :credit])
@@ -42,8 +42,7 @@ defmodule Bank.Core.Accounting.AccountEntry do
       end)
       |> Map.merge(%{
         journal_entry_uuid: journal_entry.journal_entry_uuid,
-        account: account,
-        metadata: journal_entry.metadata
+        account: account
       })
     end)
   end

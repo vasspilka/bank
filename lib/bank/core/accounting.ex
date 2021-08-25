@@ -1,26 +1,22 @@
 defmodule Bank.Core.Accounting do
-  @moduledoc """
-  Accounting context.
-  """
+  @moduledoc "Accounting context."
 
-  import Ecto.Query
-
-  alias Bank.Core.Accounting.AccountEntry
   alias Bank.Core.Events.JournalEntryCreated
   alias Bank.Repo
+  import Ecto.Query
 
-  @type account_entries :: JournalEntryCreated.account_entries()
+  @type account_entries() :: %{binary() => integer()}
 
-  @spec create_raw_entry(account_entries(), account_entries(), map()) ::
+  @spec create_raw_entry(account_entries(), account_entries()) ::
           :ok | {:error, term()}
-  def create_raw_entry(debit, credit, metadata \\ %{}) do
-    with journal_entry <-
-           validate_event(%JournalEntryCreated{
-             journal_entry_uuid: UUID.uuid4(),
-             debit: debit,
-             credit: credit,
-             metadata: metadata
-           }) do
+  def create_raw_entry(debit, credit) do
+    journal_entry = %JournalEntryCreated{
+      journal_entry_uuid: UUID.uuid4(),
+      debit: debit,
+      credit: credit
+    }
+
+    with :ok <- validate_event(journal_entry) do
       data = %EventStore.EventData{
         causation_id: Ecto.UUID.generate(),
         correlation_id: Ecto.UUID.generate(),
@@ -43,7 +39,7 @@ defmodule Bank.Core.Accounting do
     )
   end
 
-  @spec validate_event(%JournalEntryCreated{}) :: :ok | :error
+  @spec validate_event(%JournalEntryCreated{}) :: :ok | {:error, term()}
   def validate_event(je) do
     total_debit = je.debit |> Map.values() |> Enum.sum()
     total_credit = je.credit |> Map.values() |> Enum.sum()

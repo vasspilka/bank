@@ -3,24 +3,24 @@ defmodule Bank.Core.Accounts.Account do
   alias Bank.Core.Events.{MoneyDeposited, MoneyWithdrawn, JournalEntryCreated, AccountOpened}
   alias Bank.Core.Accounts.Account
 
-  @type t() :: %__MODULE__{balance: integer()}
-  defstruct id: nil, balance: 0
+  @type t() :: %__MODULE__{id: binary(), balance: integer()}
+  defstruct [:id, balance: 0]
 
   def execute(%Account{id: nil}, %DepositMoney{} = cmd) do
     [
       %AccountOpened{
-        user_id: cmd.user_id
+        account_id: cmd.account_id
       }
     ] ++
       include_journal_entry(%MoneyDeposited{
-        user_id: cmd.user_id,
+        account_id: cmd.account_id,
         amount: cmd.amount
       })
   end
 
   def execute(%Account{}, %DepositMoney{} = cmd) do
     %MoneyDeposited{
-      user_id: cmd.user_id,
+      account_id: cmd.account_id,
       amount: cmd.amount
     }
     |> include_journal_entry()
@@ -35,14 +35,14 @@ defmodule Bank.Core.Accounts.Account do
 
   def execute(%Account{}, %WithdrawMoney{} = cmd) do
     %MoneyWithdrawn{
-      user_id: cmd.user_id,
+      account_id: cmd.account_id,
       amount: cmd.amount
     }
     |> include_journal_entry()
   end
 
   def apply(state, %AccountOpened{} = evt) do
-    %{state | id: evt.user_id}
+    %{state | id: evt.account_id}
   end
 
   def apply(state, %MoneyDeposited{} = evt) do
@@ -60,9 +60,8 @@ defmodule Bank.Core.Accounts.Account do
       event,
       %JournalEntryCreated{
         journal_entry_uuid: Ecto.UUID.generate(),
-        debit: %{"#{event.user_id}" => event.amount},
-        credit: %{"0" => event.amount},
-        metadata: %{event: event.__struct__}
+        debit: %{"#{event.account_id}" => event.amount},
+        credit: %{"0" => event.amount}
       }
     ]
   end
@@ -73,8 +72,7 @@ defmodule Bank.Core.Accounts.Account do
       %JournalEntryCreated{
         journal_entry_uuid: Ecto.UUID.generate(),
         debit: %{"0" => event.amount},
-        credit: %{"#{event.user_id}" => event.amount},
-        metadata: %{event: event.__struct__}
+        credit: %{"#{event.account_id}" => event.amount}
       }
     ]
   end

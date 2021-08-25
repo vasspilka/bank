@@ -1,20 +1,20 @@
 defmodule Bank.Core.Commands do
   defmodule DepositMoney do
     @type t :: %__MODULE__{
-            user_id: integer(),
+            account_id: integer(),
             amount: integer()
           }
 
-    defstruct [:user_id, :amount]
+    defstruct [:account_id, :amount]
   end
 
   defmodule WithdrawMoney do
     @type t :: %__MODULE__{
-            user_id: integer(),
+            account_id: integer(),
             amount: integer()
           }
 
-    defstruct [:user_id, :amount]
+    defstruct [:account_id, :amount]
   end
 
   defmodule CreateLoan do
