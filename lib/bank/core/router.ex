@@ -11,4 +11,16 @@ defmodule Bank.Core.Router do
     to: Bank.Core.Accounts.Account,
     identity: :account_id
   )
+
+  dispatch(
+    [Commands.SendMoneyToAccount, Commands.FailMoneyTransfer],
+    to: Bank.Core.Accounts.Account,
+    identity: :from_account_id
+  )
+
+  dispatch(
+    [Commands.ReceiveMoneyFromAccount],
+    to: Bank.Core.Accounts.Account,
+    identity: :to_account_id
+  )
 end

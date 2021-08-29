@@ -19,17 +19,12 @@ defmodule Bank.Core.Commands do
 
   defmodule CreateLoan do
     @type t :: %__MODULE__{
-            account_ids: [integer()],
+            loan_id: binary(),
+            account_id: binary(),
             amount: integer(),
-            interest_rate: integer()
+            loan_fee: integer()
           }
 
-    defstruct [:account_ids, :amount, :interest_rate]
-  end
-
-  defmodule ApplyInterest do
-    @type t :: %__MODULE__{loan_id: binary()}
-
-    defstruct [:loan_id]
+    defstruct [:loan_id, :account_id, :amount, :loan_fee]
   end
 end

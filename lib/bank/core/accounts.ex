@@ -1,22 +1,27 @@
 defmodule Bank.Core.Accounts do
   @moduledoc "Core context of user Accounts."
 
-  alias Bank.Core.Commands.{DepositMoney, WithdrawMoney}
+  alias Bank.Core.Commands.{DepositMoney, WithdrawMoney, SendMoneyToAccount}
   alias Commanded.Commands.ExecutionResult
 
-  @spec deposit_money(integer(), integer()) ::
+  @spec deposit_money(Bank.account_number(), Bank.amount()) ::
           {:ok, ExecutionResult.t()} | {:error, term()}
-  def deposit_money(uid, amount) do
-    %DepositMoney{account_id: create_account_id(uid), amount: amount}
+  def deposit_money(acc_id, amount) do
+    %DepositMoney{account_id: acc_id, amount: amount}
     |> Bank.Core.Application.dispatch(returning: :execution_result)
   end
 
-  @spec withdraw_money(integer(), integer()) ::
+  @spec withdraw_money(Bank.account_number(), Bank.amount()) ::
           {:ok, ExecutionResult.t()} | {:error, term()}
-  def withdraw_money(uid, amount) do
-    %WithdrawMoney{account_id: create_account_id(uid), amount: amount}
+  def withdraw_money(acc_id, amount) do
+    %WithdrawMoney{account_id: acc_id, amount: amount}
     |> Bank.Core.Application.dispatch(returning: :execution_result)
   end
 
-  defp create_account_id(user_id), do: "101/#{user_id}"
+  @spec send_money(Bank.account_number(), Bank.account_number(), Bank.amount()) ::
+          {:ok, ExecutionResult.t()} | {:error, term()}
+  def send_money(from_acc_id, to_acc_id, amount) do
+    %SendMoneyToAccount{from_account_id: from_acc_id, to_account_id: to_acc_id, amount: amount}
+    |> Bank.Core.Application.dispatch(returning: :execution_result)
+  end
 end

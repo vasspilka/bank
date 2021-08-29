@@ -1,9 +1,7 @@
 defmodule Bank do
-  @moduledoc """
-  Bank keeps the contexts that define your domain
-  and business logic.
+  @moduledoc "Banking application"
 
-  Contexts are also responsible for managing your data, regardless
-  if it comes from the database, an external API or others.
-  """
+  @type account_number() :: binary()
+  @type amount() :: integer()
+  @type account_entries() :: %{account_number() => amount()}
 end

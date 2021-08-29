@@ -1,36 +1,30 @@
 defmodule Bank.Core.Accounting do
   @moduledoc "Accounting context."
 
+  alias Bank.Core.Accounting.AccountEntry
   alias Bank.Core.Events.JournalEntryCreated
   alias Bank.Repo
   import Ecto.Query
 
-  @type account_entries() :: %{binary() => integer()}
-
-  @spec create_raw_entry(account_entries(), account_entries()) ::
+  @spec create_raw_entry(Bank.account_entries(), Bank.account_entries()) ::
           :ok | {:error, term()}
   def create_raw_entry(debit, credit) do
-    journal_entry = %JournalEntryCreated{
-      journal_entry_uuid: UUID.uuid4(),
-      debit: debit,
-      credit: credit
-    }
-
-    with :ok <- validate_event(journal_entry) do
-      data = %EventStore.EventData{
-        causation_id: Ecto.UUID.generate(),
-        correlation_id: Ecto.UUID.generate(),
-        data: journal_entry,
+    Bank.Core.EventStore.append_to_stream("raw_entries", :any_version, [
+      %EventStore.EventData{
         event_id: Ecto.UUID.generate(),
         event_type: "#{JournalEntryCreated}",
-        metadata: %{}
+        causation_id: Ecto.UUID.generate(),
+        correlation_id: Ecto.UUID.generate(),
+        data: %JournalEntryCreated{
+          journal_entry_uuid: Ecto.UUID.generate(),
+          debit: debit,
+          credit: credit
+        }
       }
-
-      Bank.Core.EventStore.append_to_stream("raw_entries", :any_version, [data])
-    end
+    ])
   end
 
-  @spec current_balance(binary()) :: integer()
+  @spec current_balance(Bank.account_number()) :: integer()
   def current_balance(account) do
     Repo.one(
       from e in AccountEntry,
