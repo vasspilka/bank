@@ -17,6 +17,8 @@ defmodule Bank.Core.Loans.Loan do
   defstruct [:id, :account_id, :loan_amount]
 
   def execute(%Loan{id: nil}, %CreateLoan{} = cmd) do
+    [_, user_id] = String.split(cmd.account_id)
+
     [
       %LoanCreated{
         loan_id: cmd.loan_id,
@@ -26,8 +28,8 @@ defmodule Bank.Core.Loans.Loan do
       },
       %JournalEntryCreated{
         journal_entry_uuid: Ecto.UUID.generate(),
-        debit: %{},
-        credit: %{}
+        debit: %{"#{cmd.account_id}" => cmd.amount, "400/#{user_id}" => cmd.loan_fee},
+        credit: %{ }
       }
     ]
   end

@@ -1,4 +1,4 @@
-defmodule Bank.Core.Events.MoneySendToAccount do
+defmodule Bank.Core.Events.MoneySentToAccount do
   @type t :: %__MODULE__{
           transaction_id: binary(),
           from_account_id: Bank.account_number(),

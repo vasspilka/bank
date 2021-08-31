@@ -14,7 +14,7 @@ defmodule Bank.Core.Accounts.Account do
     AccountOpened,
     MoneyReceivedFromAccount,
     MoneyReceivedFromAccountFailed,
-    MoneySendToAccount,
+    MoneySentToAccount,
     MoneyTransferFailed
   }
 
@@ -93,7 +93,7 @@ defmodule Bank.Core.Accounts.Account do
     transaction_id = Ecto.UUID.generate()
 
     [
-      %MoneySendToAccount{
+      %MoneySentToAccount{
         transaction_id: transaction_id,
         from_account_id: state.id,
         to_account_id: cmd.to_account_id,
@@ -123,6 +123,7 @@ defmodule Bank.Core.Accounts.Account do
     ]
   end
 
+
   def execute(%Account{} = state, %FailMoneyTransfer{} = cmd) do
     [
       %MoneyTransferFailed{
@@ -139,6 +140,10 @@ defmodule Bank.Core.Accounts.Account do
     ]
   end
 
+  def apply(state, %MoneyReceivedFromAccount{} = evt) do
+    %{state | balance: state.balance + evt.amount}
+  end
+
   def apply(state, %AccountOpened{} = evt) do
     %{state | id: evt.account_id}
   end
@@ -151,18 +156,14 @@ defmodule Bank.Core.Accounts.Account do
     %{state | balance: state.balance - evt.amount}
   end
 
-  def apply(state, %MoneySendToAccount{} = evt) do
+  def apply(state, %MoneySentToAccount{} = evt) do
     %{state | balance: state.balance - evt.amount}
   end
-
-  def apply(state, %MoneyReceivedFromAccount{} = evt) do
-    %{state | balance: state.balance + evt.amount}
-  end
+  def apply(state, %JournalEntryCreated{}), do: state
 
   def apply(state, %MoneyTransferFailed{} = evt) do
     %{state | balance: state.balance + evt.amount}
   end
 
-  def apply(state, %JournalEntryCreated{}), do: state
   def apply(state, %MoneyReceivedFromAccountFailed{}), do: state
 end

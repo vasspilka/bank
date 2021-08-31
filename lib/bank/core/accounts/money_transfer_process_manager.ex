@@ -7,7 +7,7 @@ defmodule Bank.Core.Accounts.MoneyTransferProcessManager do
   alias Bank.Core.Commands.{ReceiveMoneyFromAccount, FailMoneyTransfer}
 
   alias Bank.Core.Events.{
-    MoneySendToAccount,
+    MoneySentToAccount,
     MoneyReceivedFromAccount,
     MoneyReceivedFromAccountFailed,
     MoneyTransferFailed
@@ -15,12 +15,12 @@ defmodule Bank.Core.Accounts.MoneyTransferProcessManager do
 
   defstruct [:transaction_id]
 
-  def interested?(%MoneySendToAccount{transaction_id: id}), do: {:start, id}
+  def interested?(%MoneySentToAccount{transaction_id: id}), do: {:start, id}
   def interested?(%MoneyReceivedFromAccountFailed{transaction_id: id}), do: {:continue, id}
   def interested?(%MoneyReceivedFromAccount{transaction_id: id}), do: {:stop, id}
   def interested?(%MoneyTransferFailed{transaction_id: id}), do: {:stop, id}
 
-  def handle(%__MODULE__{}, %MoneySendToAccount{} = evt),
+  def handle(%__MODULE__{}, %MoneySentToAccount{} = evt),
     do: [
       %ReceiveMoneyFromAccount{
         transaction_id: evt.transaction_id,
@@ -40,7 +40,7 @@ defmodule Bank.Core.Accounts.MoneyTransferProcessManager do
       }
     ]
 
-  def apply(_state, %MoneySendToAccount{} = evt) do
+  def apply(_state, %MoneySentToAccount{} = evt) do
     %__MODULE__{transaction_id: evt.transaction_id}
   end
 end

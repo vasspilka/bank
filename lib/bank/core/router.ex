@@ -13,7 +13,7 @@ defmodule Bank.Core.Router do
   )
 
   dispatch(
-    [Commands.SendMoneyToAccount, Commands.FailMoneyTransfer],
+    [Commands.SendMoneyToAccount],
     to: Bank.Core.Accounts.Account,
     identity: :from_account_id
   )
