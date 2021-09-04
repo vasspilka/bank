@@ -10,7 +10,7 @@ defmodule Bank.Core.Accounting.AccountEntry do
           journal_entry_uuid: binary(),
           account: binary(),
           credit: integer(),
-          credit: integer()
+          debit: integer()
         }
 
   schema "accounting_account_entries_v1" do

@@ -23,6 +23,9 @@ defmodule Bank.Core.Accounts.Account do
   @type t() :: %__MODULE__{id: binary(), balance: integer()}
   defstruct [:id, balance: 0]
 
+  def execute(%Account{}, %DepositMoney{account_id: "000-000"}),
+    do: {:error, :unable_to_create_account}
+
   def execute(%Account{id: nil}, %DepositMoney{} = cmd) do
     [
       %AccountOpened{
@@ -34,8 +37,8 @@ defmodule Bank.Core.Accounts.Account do
       },
       %JournalEntryCreated{
         journal_entry_uuid: Ecto.UUID.generate(),
-        debit: %{"100" => cmd.amount},
-        credit: %{"#{cmd.account_id}" => cmd.amount}
+        debit: %{"#{cmd.account_id}" => cmd.amount},
+        credit: %{"000-000" => cmd.amount}
       }
     ]
   end
@@ -49,7 +52,8 @@ defmodule Bank.Core.Accounts.Account do
     }
   end
 
-  def execute(%Account{id: nil}, _cmd), do: {:error, :not_found}
+  def execute(%Account{id: nil}, _cmd),
+    do: {:error, :not_found}
 
   def execute(%Account{}, %DepositMoney{} = cmd) do
     [
@@ -59,8 +63,8 @@ defmodule Bank.Core.Accounts.Account do
       },
       %JournalEntryCreated{
         journal_entry_uuid: Ecto.UUID.generate(),
-        debit: %{"100" => cmd.amount},
-        credit: %{"#{cmd.account_id}" => cmd.amount}
+        debit: %{"#{cmd.account_id}" => cmd.amount},
+        credit: %{"000-000" => cmd.amount}
       }
     ]
   end
@@ -78,8 +82,8 @@ defmodule Bank.Core.Accounts.Account do
       },
       %JournalEntryCreated{
         journal_entry_uuid: Ecto.UUID.generate(),
-        debit: %{"#{cmd.account_id}" => cmd.amount},
-        credit: %{"100" => cmd.amount}
+        debit: %{"000-000" => cmd.amount},
+        credit: %{"#{cmd.account_id}" => cmd.amount}
       }
     ]
   end
@@ -101,8 +105,8 @@ defmodule Bank.Core.Accounts.Account do
       },
       %JournalEntryCreated{
         journal_entry_uuid: Ecto.UUID.generate(),
-        debit: %{"#{state.id}" => cmd.amount},
-        credit: %{"#{transaction_id}" => cmd.amount}
+        debit: %{"#{transaction_id}" => cmd.amount},
+        credit: %{"#{state.id}" => cmd.amount}
       }
     ]
   end
@@ -111,18 +115,17 @@ defmodule Bank.Core.Accounts.Account do
     [
       %MoneyReceivedFromAccount{
         transaction_id: cmd.transaction_id,
-        from_account_id: state.id,
-        to_account_id: cmd.to_account_id,
+        from_account_id: cmd.from_account_id,
+        to_account_id: state.id,
         amount: cmd.amount
       },
       %JournalEntryCreated{
         journal_entry_uuid: Ecto.UUID.generate(),
-        credit: %{"#{cmd.to_account_id}" => cmd.amount},
-        debit: %{"#{cmd.transaction_id}" => cmd.amount}
+        credit: %{"#{cmd.transaction_id}" => cmd.amount},
+        debit: %{"#{cmd.to_account_id}" => cmd.amount}
       }
     ]
   end
-
 
   def execute(%Account{} = state, %FailMoneyTransfer{} = cmd) do
     [
@@ -134,10 +137,14 @@ defmodule Bank.Core.Accounts.Account do
       },
       %JournalEntryCreated{
         journal_entry_uuid: Ecto.UUID.generate(),
-        credit: %{"#{state.id}" => cmd.amount},
-        debit: %{"#{cmd.transaction_id}" => cmd.amount}
+        credit: %{"#{cmd.transaction_id}" => cmd.amount},
+        debit: %{"#{state.id}" => cmd.amount}
       }
     ]
+  end
+
+  def apply(state, %MoneyTransferFailed{} = evt) do
+    %{state | balance: state.balance + evt.amount}
   end
 
   def apply(state, %MoneyReceivedFromAccount{} = evt) do
@@ -159,11 +166,8 @@ defmodule Bank.Core.Accounts.Account do
   def apply(state, %MoneySentToAccount{} = evt) do
     %{state | balance: state.balance - evt.amount}
   end
-  def apply(state, %JournalEntryCreated{}), do: state
 
-  def apply(state, %MoneyTransferFailed{} = evt) do
-    %{state | balance: state.balance + evt.amount}
-  end
+  def apply(state, %JournalEntryCreated{}), do: state
 
   def apply(state, %MoneyReceivedFromAccountFailed{}), do: state
 end

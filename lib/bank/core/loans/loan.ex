@@ -29,7 +29,7 @@ defmodule Bank.Core.Loans.Loan do
       %JournalEntryCreated{
         journal_entry_uuid: Ecto.UUID.generate(),
         debit: %{"#{cmd.account_id}" => cmd.amount, "400/#{user_id}" => cmd.loan_fee},
-        credit: %{ }
+        credit: %{}
       }
     ]
   end

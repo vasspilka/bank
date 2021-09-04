@@ -33,7 +33,7 @@ defmodule Bank.Core.Accounts do
     Repo.one(
       from e in AccountEntry,
         where: e.account == ^account,
-        select: sum(e.credit) - sum(e.debit)
+        select: sum(e.debit) - sum(e.credit)
     )
   end
 end
