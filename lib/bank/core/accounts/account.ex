@@ -69,11 +69,6 @@ defmodule Bank.Core.Accounts.Account do
     ]
   end
 
-  def execute(%Account{balance: balance}, %WithdrawMoney{amount: amount})
-      when balance - amount < 0 do
-    {:error, :insufficient_balance}
-  end
-
   def execute(%Account{}, %WithdrawMoney{} = cmd) do
     [
       %MoneyWithdrawn{
@@ -84,29 +79,6 @@ defmodule Bank.Core.Accounts.Account do
         journal_entry_uuid: Ecto.UUID.generate(),
         debit: %{"000-000" => cmd.amount},
         credit: %{"#{cmd.account_id}" => cmd.amount}
-      }
-    ]
-  end
-
-  def execute(%Account{balance: balance}, %SendMoneyToAccount{amount: amount})
-      when balance - amount < 0 do
-    {:error, :insufficient_balance}
-  end
-
-  def execute(%Account{} = state, %SendMoneyToAccount{} = cmd) do
-    transaction_id = Ecto.UUID.generate()
-
-    [
-      %MoneySentToAccount{
-        transaction_id: transaction_id,
-        from_account_id: state.id,
-        to_account_id: cmd.to_account_id,
-        amount: cmd.amount
-      },
-      %JournalEntryCreated{
-        journal_entry_uuid: Ecto.UUID.generate(),
-        debit: %{"#{transaction_id}" => cmd.amount},
-        credit: %{"#{state.id}" => cmd.amount}
       }
     ]
   end
@@ -143,6 +115,33 @@ defmodule Bank.Core.Accounts.Account do
     ]
   end
 
+  def execute(%Account{balance: balance}, %SendMoneyToAccount{amount: amount})
+      when balance < amount do
+    {:error, :insufficient_balance}
+  end
+
+  def execute(%Account{} = state, %SendMoneyToAccount{} = cmd) do
+    transaction_id = Ecto.UUID.generate()
+
+    [
+      %MoneySentToAccount{
+        transaction_id: transaction_id,
+        from_account_id: state.id,
+        to_account_id: cmd.to_account_id,
+        amount: cmd.amount
+      },
+      %JournalEntryCreated{
+        journal_entry_uuid: Ecto.UUID.generate(),
+        debit: %{"#{transaction_id}" => cmd.amount},
+        credit: %{"#{state.id}" => cmd.amount}
+      }
+    ]
+  end
+
+  def apply(state, %MoneySentToAccount{} = evt) do
+    %{state | balance: state.balance - evt.amount}
+  end
+
   def apply(state, %MoneyTransferFailed{} = evt) do
     %{state | balance: state.balance + evt.amount}
   end
@@ -160,10 +159,6 @@ defmodule Bank.Core.Accounts.Account do
   end
 
   def apply(state, %MoneyWithdrawn{} = evt) do
-    %{state | balance: state.balance - evt.amount}
-  end
-
-  def apply(state, %MoneySentToAccount{} = evt) do
     %{state | balance: state.balance - evt.amount}
   end
 

@@ -3,15 +3,13 @@ defmodule Bank.Core.Events.MoneyReceivedFromAccountFailed do
           transaction_id: binary(),
           from_account_id: Bank.account_number(),
           to_account_id: Bank.account_number(),
-          amount: Bank.amount(),
-          reason: term()
+          amount: Bank.amount()
         }
 
   defstruct [
     :transaction_id,
     :from_account_id,
     :to_account_id,
-    :amount,
-    :reason
+    :amount
   ]
 end
