@@ -43,8 +43,6 @@ config :bank, Bank.Core.Application,
     ]
   ]
 
-# config :bank, event_stores: [Bank.Core.EventStore]
-
 config :commanded_ecto_projections,
   repo: Bank.Repo
 
