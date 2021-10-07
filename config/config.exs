@@ -27,25 +27,26 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-config :bank, Bank.Core.EventStore,
-  username: "postgres",
-  password: "postgres",
-  database: "bank_eventstore_dev",
-  hostname: "localhost",
-  serializer: EventStore.TermSerializer
+config :bank, Bank.Core.Application,
+  event_store: [
+    adapter: Commanded.EventStore.Adapters.Extreme,
+    serializer: Commanded.Serialization.JsonSerializer,
+    stream_prefix: "myapp",
+    extreme: [
+      db_type: :node,
+      host: "localhost",
+      port: 1113,
+      username: "admin",
+      password: "changeit",
+      reconnect_delay: 2_000,
+      max_attempts: :infinity
+    ]
+  ]
 
-config :bank, event_stores: [Bank.Core.EventStore]
+# config :bank, event_stores: [Bank.Core.EventStore]
 
 config :commanded_ecto_projections,
   repo: Bank.Repo
-
-config :bank, Bank.Core.Application,
-  event_store: [
-    adapter: Commanded.EventStore.Adapters.EventStore,
-    event_store: Bank.Core.EventStore
-  ],
-  pubsub: :local,
-  registry: :local
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
