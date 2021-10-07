@@ -4,5 +4,6 @@ defmodule Bank.Core.Events.MoneyWithdrawn do
           amount: Bank.amount()
         }
 
+  @derive Jason.Encoder
   defstruct [:account_id, :amount]
 end

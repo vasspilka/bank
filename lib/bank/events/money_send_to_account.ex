@@ -6,6 +6,7 @@ defmodule Bank.Core.Events.MoneySentToAccount do
           amount: Bank.amount()
         }
 
+  @derive Jason.Encoder
   defstruct [
     :transaction_id,
     :from_account_id,

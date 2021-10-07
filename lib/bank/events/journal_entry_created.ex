@@ -7,5 +7,6 @@ defmodule Bank.Core.Events.JournalEntryCreated do
           credit: Accounting.account_entries()
         }
 
+  @derive Jason.Encoder
   defstruct [:journal_entry_uuid, :debit, :credit]
 end
