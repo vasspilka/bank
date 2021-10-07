@@ -1,20 +1,18 @@
 # Bank
 
-To start your Phoenix server:
+An example event-source application used for my ElixirConfEU 2021 talk.
 
   * Install dependencies with `mix deps.get`
   * Create and migrate your database with `mix ecto.setup`
-  * Install Node.js dependencies with `npm install` inside the `assets` directory
-  * Start Phoenix endpoint with `mix phx.server`
-
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+  * Run app with `iex -S mix`
 
 ## Learn more
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+  * Talk Slides: https://drive.google.com/file/d/1nW0Bg3u-ZDMJe9W3yaFs6X17dFWYG_kV/view
+  * Commanded Repo: https://github.com/commanded/commanded
+  * Eventsourcing: https://martinfowler.com/eaaDev/EventSourcing.html
+
+## Todos
+
+  * Add tests
+  * Additional features?? (Make requests in issues)
