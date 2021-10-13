@@ -11,6 +11,7 @@ An example event-source application used for my ElixirConfEU 2021 talk.
   * Talk Slides: https://drive.google.com/file/d/1nW0Bg3u-ZDMJe9W3yaFs6X17dFWYG_kV/view
   * Commanded Repo: https://github.com/commanded/commanded
   * Eventsourcing: https://martinfowler.com/eaaDev/EventSourcing.html
+  * Recording: https://www.youtube.com/watch?v=ggfrpP88r2A 
 
 ## Todos
 
