@@ -34,7 +34,9 @@ defmodule Bank.MixProject do
     [
       {:commanded, "~> 1.2.0"},
       {:commanded_eventstore_adapter, "~> 1.2.0"},
+      {:commanded_extreme_adapter, "~> 1.1.0"},
       {:commanded_ecto_projections, "~> 1.2"},
+      {:extreme, "~> 0.13.2"},
       {:eventstore, "~> 1.3.0"},
       {:phoenix, "~> 1.5.9"},
       {:phoenix_ecto, "~> 4.1"},
